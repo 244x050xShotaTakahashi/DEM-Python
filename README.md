@@ -74,10 +74,87 @@ python main.py
 - `outputs/overlap/`: オーバーラップ解析結果
 - `dem_simulation.gif`: アニメーション（可視化機能使用時）
 
+## オーバーラップと速度の妥当性検証
+
+このプロジェクトには、数値計算結果と理論解を比較してシミュレーションの精度を検証する機能が含まれています。
+
+### 概要
+
+粒子衝突時のオーバーラップ量と速度の時系列データを理論解（減衰自由振動の解析解）と比較し、以下の誤差指標を計算します：
+
+- **MAE (Mean Absolute Error)**: 平均絶対誤差
+- **RMSE (Root Mean Square Error)**: 二乗平均平方根誤差
+- **MAX**: 最大誤差
+- **REL_PERCENT**: 平均相対誤差（%）
+
+### 前提条件
+
+妥当性検証を実行する前に、DEMシミュレーションを実行して`outputs/overlap/`ディレクトリに`overlap_velocity_comparison_*.csv`ファイルが生成されている必要があります。
+
+### 基本的な使用方法
+
+```bash
+# シミュレーション実行（粒子衝突が発生する設定で）
+python dem_calc.py
+
+# 妥当性検証の実行（基本）
+python check_overlap_validity.py -f outputs/overlap/overlap_velocity_comparison_0_1_12345.csv
+
+# 許容誤差を指定して実行
+python check_overlap_validity.py -f outputs/overlap/overlap_velocity_comparison_0_1_12345.csv --tol 1e-4
+
+# グラフを表示しながら実行
+python check_overlap_validity.py -f outputs/overlap/overlap_velocity_comparison_0_1_12345.csv --plot
+
+# グラフをPNGファイルに保存
+python check_overlap_validity.py -f outputs/overlap/overlap_velocity_comparison_0_1_12345.csv --png result_validation.png
+```
+
+### オプション詳細
+
+| オプション | 説明 | デフォルト |
+|-----------|------|-----------|
+| `-f`, `--file` | 解析対象のCSVファイルパス（必須） | - |
+| `--tol` | 許容誤差しきい値 | 1e-3 |
+| `--plot` | グラフをウィンドウで表示 | False |
+| `--png` | グラフをPNGファイルに保存（ファイル名指定） | None |
+
+### 出力例
+
+```
+=== オーバーラップの誤差指標 ===
+MAE         :  1.234567e-05
+RMSE        :  2.345678e-05
+MAX         :  5.678901e-05
+REL_PERCENT :  0.123456 %
+
+=== 速度の誤差指標 ===
+MAE         :  3.456789e-04
+RMSE        :  4.567890e-04
+MAX         :  8.901234e-04
+REL_PERCENT :  0.234567 %
+
+→ オーバーラップ判定: OK (許容誤差 1e-3 以下)
+→ 速度判定: OK (許容誤差 1e-3 以下)
+```
+
+### パラメータ掃引での自動実行
+
+`parameter_sweep.py`を実行すると、各パラメータ組み合わせでシミュレーションを実行後、自動的に妥当性検証が実行され、結果がPNGファイルに保存されます：
+
+```bash
+python parameter_sweep.py
+```
+
+この場合、`outputs/overlap/`ディレクトリ内に`e=0.5_v=20_k=100.png`のような名前でグラフが保存されます。
+
+### 判定基準
+
+- **OK**: MAEとRMSEの両方が指定した許容誤差（`--tol`）未満
+- **NG**: MAEまたはRMSEのいずれかが許容誤差を超過
+
+この機能により、シミュレーションパラメータの妥当性や数値積分手法の精度を定量的に評価できます。
+
 ## 開発者
 
 Shota Takahashi (244x050xShotaTakahashi)
-
-## ライセンス
-
-このプロジェクトはMITライセンスの下で公開されています。
