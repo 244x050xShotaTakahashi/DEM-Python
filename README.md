@@ -16,12 +16,31 @@
 
 ## ファイル構成
 
-- `dem_calc.py`: メインのDEMシミュレーションクラス
+### 🔧 メインプログラム
+- `dem_calc.py`: メインのDEMシミュレーション
 - `config.json`: シミュレーションパラメータ設定ファイル
-- `main.py`: シミュレーション実行用メインスクリプト
-- `visualizer.py`: アニメーション作成機能
-- `elements.py`: 粒子と線要素のクラス定義
-- `interface.py`: 接触界面の物理パラメータ定義
+
+### 🎥 可視化・アニメーション
+- `visualizer.py`: アニメーション作成機能（GIF出力）
+
+### 🔍 解析・検証ツール
+- `calc_restitution.py`: 跳ね返り係数計算ツール
+- `check_overlap_validity.py`: オーバーラップ妥当性検証ツール
+- `validate_collision.py`: 衝突検証ツール
+- `parameter_sweep.py`: パラメータ掃引実行ツール
+
+### ⚙️ 設定ファイル例
+- `config_e=0.254924.json`: 低跳ね返り係数設定例
+- `config_e=0.494866.json`: 中跳ね返り係数設定例
+- `config_e=0.999931.json`: 高跳ね返り係数設定例
+
+### 📁 出力ディレクトリ
+- `outputs/`: シミュレーション結果CSV出力先
+  - `dem_results.csv.*`: 各ステップでの粒子状態
+  - `collision_statistics.csv`: 衝突統計情報
+  - `overlap/`: オーバーラップ解析結果ディレクトリ
+- `debug/`: デバッグログ出力先
+
 
 ## 必要な環境
 
@@ -43,7 +62,7 @@ pip install numpy matplotlib
 ### 基本的な実行方法
 
 ```bash
-python main.py
+python dem_calc.py
 ```
 
 ### 設定の変更
